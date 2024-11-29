@@ -14,7 +14,6 @@ public class TopdownMovement : MonoBehaviour
     public float dashCD=0.5f;
     [Header("Player Animation")]
     public Animator anim;
-    public bool isMoving;
     public bool isRunning;
     public bool isDashing;
     public bool isAttacking;
@@ -27,6 +26,7 @@ public class TopdownMovement : MonoBehaviour
     void Update()
     {
         handleMovement();
+        handleAnimation();
         handleDash();
         flipPlayer();
     }
@@ -34,13 +34,12 @@ public class TopdownMovement : MonoBehaviour
     void handleMovement(){
         xInput=Input.GetAxis("Horizontal");
         yInput=Input.GetAxis("Vertical");
-        Vector2 moveDir=new Vector2(xInput,yInput);
-        if(Input.GetKey(KeyCode.LeftShift)){
-            rb.velocity=moveDir.normalized*runSpeed;
-        }else if(Input.GetKey(KeyCode.LeftControl)){
-            rb.velocity=moveDir.normalized*dash;
+        rb.velocity=new Vector2(xInput*moveSpeed,yInput*moveSpeed);
+        isRunning=Input.GetKey(KeyCode.LeftShift);
+        if(isRunning){
+            rb.velocity=new Vector2(xInput*runSpeed,yInput*runSpeed);
         }else{
-            rb.velocity=moveDir.normalized*moveSpeed;
+            rb.velocity=new Vector2(xInput*moveSpeed,yInput*moveSpeed);
         }
     }
 
@@ -70,6 +69,7 @@ public class TopdownMovement : MonoBehaviour
     }
 
     void handleAnimation(){
-
+        anim.SetFloat("xInput",xInput);
+        anim.SetFloat("yInput",yInput);
     }
 }
