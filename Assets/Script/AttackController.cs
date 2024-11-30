@@ -6,10 +6,12 @@ public class AttackController : MonoBehaviour
     public float lineLong;
     public Animator animator;
     public Vector3 MousePosition;
+    TopdownMovement topdownMovement;
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<TopdownMovement>().anim;
+        topdownMovement = GetComponent<TopdownMovement>();
+        animator =topdownMovement.anim;
     }
 
     // Update is called once per frame
@@ -29,6 +31,10 @@ public class AttackController : MonoBehaviour
             if (angle > -45 && angle <= 45)
             {
                 animator.SetTrigger("AttackSide");
+                if(!topdownMovement.facingRight){
+                    transform.Rotate(0, 180, 0);
+                    topdownMovement.facingRight = true;
+                }
             }
             else if (angle > 45 && angle <= 135)
             {
@@ -41,6 +47,16 @@ public class AttackController : MonoBehaviour
             else
             {
                 animator.SetTrigger("AttackSide");
+                if (topdownMovement.facingRight)
+                {
+                    transform.Rotate(0, 180, 0);
+                    topdownMovement.facingRight = false;
+                }
+                else
+                {
+                    transform.Rotate(0, 180, 0);
+                    topdownMovement.facingRight = true;
+                }
             }
         }
         

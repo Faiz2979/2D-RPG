@@ -19,8 +19,8 @@ public class TopdownMovement : MonoBehaviour
     public bool isAttacking;
 
     [Header("Player Facing")]
-    private int facingDir = 1;
-    private bool facingRight = true;
+    public int facingDir = 1;
+    public bool facingRight = true;
 
     // Update is called once per frame
     void Update()
