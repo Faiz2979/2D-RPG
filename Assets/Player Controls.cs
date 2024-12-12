@@ -29,9 +29,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Run"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Button"",
                     ""id"": ""b0c8cf23-9f48-47cc-9088-d05ec02da7e2"",
-                    ""expectedControlType"": ""Key"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -143,6 +143,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Combat"",
+            ""id"": ""cf4bb83f-685c-4e42-97f6-10956db4ac45"",
+            ""actions"": [
+                {
+                    ""name"": ""Basic Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""39fff28e-26ea-448f-8529-9af96d82c451"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""e217601f-98dd-477b-ab44-e264ef5e4e4b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Basic Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -153,6 +181,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Movement_SideMove = m_Movement.FindAction("SideMove", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
         m_Movement_Down = m_Movement.FindAction("Down", throwIfNotFound: true);
+        // Combat
+        m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
+        m_Combat_BasicAttack = m_Combat.FindAction("Basic Attack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -280,11 +311,61 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         }
     }
     public MovementActions @Movement => new MovementActions(this);
+
+    // Combat
+    private readonly InputActionMap m_Combat;
+    private List<ICombatActions> m_CombatActionsCallbackInterfaces = new List<ICombatActions>();
+    private readonly InputAction m_Combat_BasicAttack;
+    public struct CombatActions
+    {
+        private @PlayerControls m_Wrapper;
+        public CombatActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @BasicAttack => m_Wrapper.m_Combat_BasicAttack;
+        public InputActionMap Get() { return m_Wrapper.m_Combat; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CombatActions set) { return set.Get(); }
+        public void AddCallbacks(ICombatActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CombatActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Add(instance);
+            @BasicAttack.started += instance.OnBasicAttack;
+            @BasicAttack.performed += instance.OnBasicAttack;
+            @BasicAttack.canceled += instance.OnBasicAttack;
+        }
+
+        private void UnregisterCallbacks(ICombatActions instance)
+        {
+            @BasicAttack.started -= instance.OnBasicAttack;
+            @BasicAttack.performed -= instance.OnBasicAttack;
+            @BasicAttack.canceled -= instance.OnBasicAttack;
+        }
+
+        public void RemoveCallbacks(ICombatActions instance)
+        {
+            if (m_Wrapper.m_CombatActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ICombatActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CombatActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public CombatActions @Combat => new CombatActions(this);
     public interface IMovementActions
     {
         void OnRun(InputAction.CallbackContext context);
         void OnSideMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnDown(InputAction.CallbackContext context);
+    }
+    public interface ICombatActions
+    {
+        void OnBasicAttack(InputAction.CallbackContext context);
     }
 }
