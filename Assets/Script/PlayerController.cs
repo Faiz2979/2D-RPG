@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]private float attackRange;
     [SerializeField]private float attackRate;
     [SerializeField]private LayerMask enemyLayer;
+    public Vector3 offset;
     private float nextAttackTime;
     public bool canAttack=true;
     private bool player_Jump;
@@ -89,9 +90,9 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * rayCastLong);
 
-        if(AttackOrigin == null){
-            Gizmos.DrawWireSphere(AttackOrigin.position, attackRange);
-            
+        if(AttackOrigin != null){
+            Gizmos.color= Color.green;
+            Gizmos.DrawWireSphere(AttackOrigin.position+offset, attackRange);
         }
     }
 
@@ -132,13 +133,14 @@ public class PlayerController : MonoBehaviour
             
             animator.SetTrigger("isAttacking");
             Debug.Log("Player Attack");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(AttackOrigin.position, attackRange, enemyLayer);
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(AttackOrigin.position+offset, attackRange, enemyLayer);
             for(int i = 0; i < hitEnemies.Length; i++){
                 IDamageable enemyAttributes = hitEnemies[i].GetComponent<IDamageable>();
                 if(enemyAttributes != null){
                     enemyAttributes.TakeDamage(attackDamage);
                 }
             }
+            animator.ResetTrigger("isAttacking");
             nextAttackTime = attackRate;
         } else{
             nextAttackTime -= Time.deltaTime;
