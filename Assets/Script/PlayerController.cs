@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -21,9 +22,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("Combat Mechanics")]
     [SerializeField]private Transform AttackOrigin;
-    [SerializeField]private float attackRange;
-    [SerializeField]private LayerMask enemyLayer;
     [SerializeField]private float attackDamage;
+    [SerializeField]private float attackRange;
+    [SerializeField]private float attackRate;
+    [SerializeField]private LayerMask enemyLayer;
+    private float nextAttackTime;
+    public bool canAttack=true;
     private bool player_Jump;
     private bool player_Run;
     private bool player_Down;
@@ -44,6 +48,12 @@ public class PlayerController : MonoBehaviour
     {
         PlayerInput();
         Move();
+        HandleMeeleAttack();
+        if(nextAttackTime <= 0){
+            canAttack = true;
+        } else{
+            canAttack = false;
+        }
         HandleAnimation();
         FlipSprite();
     }
@@ -51,7 +61,7 @@ public class PlayerController : MonoBehaviour
     public void PlayerInput()
     {
         sideMoveInput = playerControls.Movement.SideMove.ReadValue<float>();
-        player_Run = playerControls.Movement.Run.IsPressed(); // Menggunakan ReadValue<bool>()
+        player_Run = playerControls.Movement.Run.IsPressed();
         player_Attack= playerControls.Combat.BasicAttack.triggered;
         player_Jump = playerControls.Movement.Jump.triggered;
         player_Down = playerControls.Movement.Down.triggered;
@@ -78,6 +88,11 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * rayCastLong);
+
+        if(AttackOrigin == null){
+            Gizmos.DrawWireSphere(AttackOrigin.position, attackRange);
+            
+        }
     }
 
     void CheckGroundStatus()
@@ -111,12 +126,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Attack()
-    {
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(AttackOrigin.position, attackRange, enemyLayer);
-        foreach (Collider2D enemy in hitEnemies)
+    private void HandleMeeleAttack(){
+        if (player_Attack && (nextAttackTime <=0))
         {
-            enemy.GetComponent<IDamageable>().TakeDamage(attackDamage);
+            
+            animator.SetTrigger("isAttacking");
+            Debug.Log("Player Attack");
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(AttackOrigin.position, attackRange, enemyLayer);
+            for(int i = 0; i < hitEnemies.Length; i++){
+                IDamageable enemyAttributes = hitEnemies[i].GetComponent<IDamageable>();
+                if(enemyAttributes != null){
+                    enemyAttributes.TakeDamage(attackDamage);
+                }
+            }
+            nextAttackTime = attackRate;
+        } else{
+            nextAttackTime -= Time.deltaTime;
         }
     }
 }
