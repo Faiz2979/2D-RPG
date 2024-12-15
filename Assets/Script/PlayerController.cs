@@ -68,15 +68,15 @@ public class PlayerController : MonoBehaviour
 void Move()
 {
     CheckGroundStatus();
-    rb.velocity = new Vector2(sideMoveInput * moveSpeed, rb.velocity.y);
+    rb.linearVelocity = new Vector2(sideMoveInput * moveSpeed, rb.linearVelocity.y);
 
     if (player_Jump && isGrounded)
     {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
     if (player_Down)
     {
-        rb.velocity = new Vector2(rb.velocity.x, -jumpForce / 2);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, -jumpForce / 2);
     }
 
     Dash(); // Panggil metode Dash
@@ -102,7 +102,7 @@ void Move()
     {
         bool isMoving = sideMoveInput != 0;
         animator.SetBool("isGrounded", isGrounded);
-        animator.SetFloat("yVelocity", rb.velocity.y);
+        animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isMoving", isMoving);
         animator.SetBool("isDashing", isDashing);
     }
@@ -123,7 +123,7 @@ void Move()
 void Dash(){
     if (isDashing){
         dashTimer -= Time.deltaTime;
-        rb.velocity = new Vector2(sideMoveInput * dashSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(sideMoveInput * dashSpeed, rb.linearVelocity.y);
         if (dashTimer <= 0){
             isDashing = false;
             dashTimer = dashCD;
