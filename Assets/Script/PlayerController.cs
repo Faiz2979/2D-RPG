@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement Mechanics")]
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float runSpeed;
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashCD;
+    [SerializeField] private float dashTimer;
     private float sideMoveInput;
     [Header("")]
     [Header("Jump Mechanics")]
@@ -30,10 +32,11 @@ public class PlayerController : MonoBehaviour
     private float nextAttackTime;
     public bool canAttack=true;
     private bool player_Jump;
-    private bool player_Run;
+    private bool player_Dash;
     private bool player_Down;
     private bool player_Attack;
 
+    private bool isDashing;
     private void Awake()
     {
         playerControls = new PlayerControls();
@@ -48,42 +51,36 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         PlayerInput();
-        Move();
-        HandleMeeleAttack();
-        if(nextAttackTime <= 0){
-            canAttack = true;
-        } else{
-            canAttack = false;
-        }
         HandleAnimation();
+        Move();
         FlipSprite();
     }
 
     public void PlayerInput()
     {
         sideMoveInput = playerControls.Movement.SideMove.ReadValue<float>();
-        player_Run = playerControls.Movement.Run.IsPressed();
+        player_Dash = playerControls.Movement.Dash.triggered;
         player_Attack= playerControls.Combat.BasicAttack.triggered;
         player_Jump = playerControls.Movement.Jump.triggered;
         player_Down = playerControls.Movement.Down.triggered;
     }
 
-    void Move()
+void Move()
+{
+    CheckGroundStatus();
+    rb.velocity = new Vector2(sideMoveInput * moveSpeed, rb.velocity.y);
+
+    if (player_Jump && isGrounded)
     {
-        float moveSpeedToUse = player_Run ? runSpeed : moveSpeed; // Memilih kecepatan berdasarkan status Run
-
-        CheckGroundStatus();
-        rb.velocity = new Vector2(sideMoveInput * moveSpeedToUse, rb.velocity.y);
-
-        if (player_Jump && isGrounded)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
-        if (player_Down)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, -jumpForce / 2);
-        }
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
+    if (player_Down)
+    {
+        rb.velocity = new Vector2(rb.velocity.x, -jumpForce / 2);
+    }
+
+    Dash(); // Panggil metode Dash
+}
 
     private void OnDrawGizmos()
     {
@@ -103,47 +100,41 @@ public class PlayerController : MonoBehaviour
 
     void HandleAnimation()
     {
-        if (sideMoveInput != 0)
-        {
-
-            animator.SetBool("isRunning", true); // Animasi 'isRunning' tergantung status Run
-        }
-        else
-        {
-            animator.SetBool("isRunning", false);
-        }
-        animator.SetBool("isJumping", !isGrounded);
+        bool isMoving = sideMoveInput != 0;
+        animator.SetBool("isGrounded", isGrounded);
+        animator.SetFloat("yVelocity", rb.velocity.y);
+        animator.SetBool("isMoving", isMoving);
+        animator.SetBool("isDashing", isDashing);
     }
 
     void FlipSprite()
     {
+        bool right=true;
         if (sideMoveInput > 0)
         {
-            sprite.flipX = false;
+            sprite.flipX = !right;
         }
         else if (sideMoveInput < 0)
         {
-            sprite.flipX = true;
+            sprite.flipX = right;
         }
     }
-
-    private void HandleMeeleAttack(){
-        if (player_Attack && (nextAttackTime <=0))
-        {
-            
-            animator.SetTrigger("isAttacking");
-            Debug.Log("Player Attack");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(AttackOrigin.position+offset, attackRange, enemyLayer);
-            for(int i = 0; i < hitEnemies.Length; i++){
-                IDamageable enemyAttributes = hitEnemies[i].GetComponent<IDamageable>();
-                if(enemyAttributes != null){
-                    enemyAttributes.TakeDamage(attackDamage);
-                }
-            }
-            animator.ResetTrigger("isAttacking");
-            nextAttackTime = attackRate;
-        } else{
-            nextAttackTime -= Time.deltaTime;
+    
+void Dash(){
+    if (isDashing){
+        dashTimer -= Time.deltaTime;
+        rb.velocity = new Vector2(sideMoveInput * dashSpeed, rb.velocity.y);
+        if (dashTimer <= 0){
+            isDashing = false;
+            dashTimer = dashCD;
+        }
+        }
+        else if (dashTimer > 0){
+            dashTimer -= Time.deltaTime;
+        }
+        else if (player_Dash){
+            isDashing = true;
+            dashTimer = dashCD;
         }
     }
 }

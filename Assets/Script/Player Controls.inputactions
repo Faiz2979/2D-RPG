@@ -6,7 +6,7 @@
             "id": "4af41d1b-6434-4433-93af-208880f93618",
             "actions": [
                 {
-                    "name": "Run",
+                    "name": "Dash",
                     "type": "Button",
                     "id": "b0c8cf23-9f48-47cc-9088-d05ec02da7e2",
                     "expectedControlType": "Button",
@@ -50,7 +50,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Run",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
