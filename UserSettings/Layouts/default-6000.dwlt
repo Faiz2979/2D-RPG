@@ -331,8 +331,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project Settings\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1513
-    y: 79
+    x: 1514
+    y: 24
     width: 406
     height: 955
   m_SerializedDataModeController:
@@ -977,7 +977,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: -0.30929178, y: -0.19315884, z: -0.0032369895}
     speed: 2
-    m_Value: {x: -0.7031987, y: -0.14726676, z: -0.008101488}
+    m_Value: {x: -0.30929178, y: -0.19315884, z: -0.0032369895}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1029,7 +1029,7 @@ MonoBehaviour:
   m_Size:
     m_Target: 10.323674
     speed: 2
-    m_Value: 10.81013
+    m_Value: 10.323674
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1082,7 +1082,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79
+    y: 24
     width: 965
     height: 662
   m_SerializedDataModeController:
@@ -1182,8 +1182,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 966
-    y: 79
+    x: 1
+    y: 24
     width: 545
     height: 507
   m_SerializedDataModeController:
@@ -1227,7 +1227,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 489f0000
     m_LastClickedID: 40776
-    m_ExpandedIDs: 00000000489f00000eab000072bb000074bb000076bb000078bb00007abb00007cbb000000ca9a3b
+    m_ExpandedIDs: 0000000026900000289000002a9000002c9000002e900000309000003290000034900000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1256,7 +1256,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000489f00000eab000072bb000074bb000076bb000078bb00007abb00007cbb0000
+    m_ExpandedIDs: 0000000026900000289000002a9000002c9000002e900000309000003290000034900000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1336,7 +1336,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 767
+    y: 712
     width: 965
     height: 267
   m_SerializedDataModeController:
@@ -1565,8 +1565,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Unity.PlasticSCM.Editor.PlasticWindow\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 966
-    y: 612
+    x: 1
+    y: 557
     width: 545
     height: 422
   m_SerializedDataModeController:
