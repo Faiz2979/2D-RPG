@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         PlayerInput();
+        Attacking();
         HandleAnimation();
         Move();
         FlipSprite();
@@ -92,13 +93,6 @@ void Move()
     void HandleAnimation()
     {
         bool isMoving = sideMoveInput != 0;
-        isAttacking = player_Attack;
-        if(isAttacking){
-            comboCounter++;
-        }
-        if(comboCounter > 3){
-            comboCounter = 1;
-        }
         animator.SetBool("isGrounded", isGrounded);
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isMoving", isMoving);
@@ -140,4 +134,20 @@ void Dash(){
         }
     }
 
+void Attacking(){
+    isAttacking=player_Attack;
+    if (player_Attack){
+        comboCounter++;
+        rb.linearVelocity = new Vector2(0,0);
+        if (comboCounter > 3){
+            comboCounter = 1;
+        }
+    }
+
+}
+
+    private void OnDisable()
+    {
+        playerControls.Disable();
+}
 }
