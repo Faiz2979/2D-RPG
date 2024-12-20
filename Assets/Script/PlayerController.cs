@@ -24,19 +24,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isGrounded;
 
     [Header("Combat Mechanics")]
-    [SerializeField]private Transform AttackOrigin;
-    [SerializeField]private float attackDamage;
-    [SerializeField]private float attackRange;
-    [SerializeField]private float attackRate;
-    [SerializeField]private LayerMask enemyLayer;
-    public Vector3 offset;
-    private float nextAttackTime;
-    public bool canAttack=true;
+    private bool isAttacking;
+    private int comboCounter = 1;
+
     private bool player_Jump;
     private bool player_Dash;
     private bool player_Down;
     private bool player_Attack;
-
     private bool isDashing;
     private void Awake()
     {
@@ -88,10 +82,6 @@ void Move()
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * rayCastLong);
 
-        if(AttackOrigin != null){
-            Gizmos.color= Color.green;
-            Gizmos.DrawWireSphere(AttackOrigin.position+offset, attackRange);
-        }
     }
 
     void CheckGroundStatus()
@@ -102,10 +92,20 @@ void Move()
     void HandleAnimation()
     {
         bool isMoving = sideMoveInput != 0;
+        isAttacking = player_Attack;
+        if(isAttacking){
+            comboCounter++;
+        }
+        if(comboCounter > 3){
+            comboCounter = 1;
+        }
         animator.SetBool("isGrounded", isGrounded);
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isMoving", isMoving);
         animator.SetBool("isDashing", isDashing);
+        animator.SetBool("isAttacking", isAttacking);
+        animator.SetInteger("Combo", comboCounter);
+        // canAttack=;
     }
 
     void FlipSprite()
@@ -139,4 +139,5 @@ void Dash(){
             dashTimer = dashCD;
         }
     }
+
 }
