@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashCD;
     [SerializeField] private float dashTimer;
+    private float dashTime;
     private float sideMoveInput;
     [Header("")]
     [Header("Jump Mechanics")]
@@ -109,16 +110,17 @@ void Move()
 
     void FlipSprite()
     {
-        bool right=true;
         if (sideMoveInput > 0)
         {
-            sprite.flipX = !right;
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
         else if (sideMoveInput < 0)
         {
-            sprite.flipX = right;
+            transform.rotation = Quaternion.Euler(0, 180, 0);
         }
-    }
+        }
+    
+    
     
 void Dash(){
     if (isDashing){
