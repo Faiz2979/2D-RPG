@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     [Header("Combat Mechanics")]
     private bool isAttacking;
     private int comboCounter = 1;
+    [SerializeField]private float comboCD = 0.5f;
+    [SerializeField]private float comboTimer;
 
     private bool player_Jump;
     private bool player_Dash;
@@ -45,8 +47,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        comboTimer -= Time.deltaTime;
         PlayerInput();
-        Attacking();
         HandleAnimation();
         Move();
         FlipSprite();
@@ -56,7 +58,14 @@ public class PlayerController : MonoBehaviour
     {
         sideMoveInput = playerControls.Movement.SideMove.ReadValue<float>();
         player_Dash = playerControls.Movement.Dash.triggered;
-        player_Attack= playerControls.Combat.BasicAttack.triggered;
+        isAttacking = Input.GetMouseButton(0);
+        if(isAttacking){
+            comboTimer = comboCD;
+            
+            if(comboTimer <= 0){
+            comboCounter = 1;
+            }
+        }
         player_Jump = playerControls.Movement.Jump.triggered;
         player_Down = playerControls.Movement.Down.triggered;
     }
@@ -99,7 +108,7 @@ void Move()
         animator.SetBool("isDashing", isDashing);
         animator.SetBool("isAttacking", isAttacking);
         animator.SetInteger("Combo", comboCounter);
-        // canAttack=;
+
     }
 
     void FlipSprite()
@@ -134,14 +143,13 @@ void Dash(){
         }
     }
 
-void Attacking(){
-    isAttacking=player_Attack;
-    if (player_Attack){
-        comboCounter++;
-        rb.linearVelocity = new Vector2(0,0);
-        if (comboCounter > 3){
-            comboCounter = 1;
-        }
+
+
+
+public void AttackOver(){
+    comboCounter++;
+    if (comboCounter > 3){
+        comboCounter = 1;
     }
 
 }
