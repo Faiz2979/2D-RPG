@@ -24,10 +24,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isGrounded;
 
     [Header("Combat Mechanics")]
-    private bool isAttacking;
+    public bool isAttacking;
     private int comboCounter = 1;
+    private float attackTimer;
+    [SerializeField]private float attackCD = 0.5f;
     [SerializeField]private float comboCD = 0.5f;
-    [SerializeField]private float comboTimer;
+    private float comboTimer;
 
     private bool player_Jump;
     private bool player_Dash;
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         comboTimer -= Time.deltaTime;
+        attackTimer -= Time.deltaTime;
         PlayerInput();
         HandleAnimation();
         Move();
@@ -58,13 +61,18 @@ public class PlayerController : MonoBehaviour
     {
         sideMoveInput = playerControls.Movement.SideMove.ReadValue<float>();
         player_Dash = playerControls.Movement.Dash.triggered;
-        isAttacking = Input.GetMouseButton(0);
-        if(isAttacking){
-            comboTimer = comboCD;
+        player_Attack = playerControls.Combat.BasicAttack.triggered;
+
+        if (player_Attack && attackTimer < 0){
             
             if(comboTimer <= 0){
             comboCounter = 1;
             }
+            animator.SetTrigger("isAttacking");
+
+            comboTimer = comboCD;
+            attackTimer = attackCD;
+
         }
         player_Jump = playerControls.Movement.Jump.triggered;
         player_Down = playerControls.Movement.Down.triggered;
@@ -106,7 +114,6 @@ void Move()
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isMoving", isMoving);
         animator.SetBool("isDashing", isDashing);
-        animator.SetBool("isAttacking", isAttacking);
         animator.SetInteger("Combo", comboCounter);
 
     }
@@ -126,7 +133,7 @@ void Move()
     
     
 void Dash(){
-    if (isDashing){
+    if (isDashing  && dashTimer > 0){
         dashTimer -= Time.deltaTime;
         rb.linearVelocity = new Vector2(sideMoveInput * dashSpeed, rb.linearVelocity.y);
         if (dashTimer <= 0){
