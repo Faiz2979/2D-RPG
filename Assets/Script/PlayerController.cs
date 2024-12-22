@@ -65,15 +65,20 @@ public class PlayerController : MonoBehaviour
 
         if (player_Attack && attackTimer < 0){
             
-            if(comboTimer <= 0){
-            comboCounter = 1;
-            }
+        if (comboTimer > 0) {
+            // Trigger animasi serangan berikutnya dalam combo
             animator.SetTrigger("isAttacking");
+        } else {
+            // Combo telah selesai, reset ke serangan awal
+            comboCounter = 1; 
+            animator.SetTrigger("isAttacking");
+        }
 
             comboTimer = comboCD;
             attackTimer = attackCD;
 
         }
+
         player_Jump = playerControls.Movement.Jump.triggered;
         player_Down = playerControls.Movement.Down.triggered;
     }
