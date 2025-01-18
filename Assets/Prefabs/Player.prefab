@@ -87,15 +87,10 @@ MonoBehaviour:
     m_Bits: 64
   rayCastLong: 1
   isGrounded: 0
-  AttackOrigin: {fileID: 5266905794975586977}
-  attackDamage: 5
-  attackRange: 1.19
-  attackRate: 0.75
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  offset: {x: 0, y: 0, z: 0}
-  canAttack: 1
+  isAttacking: 0
+  attackCD: 0.5
+  comboCD: 3
+  comboTimer: 0
 --- !u!70 &6707908917848717338
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -175,6 +170,7 @@ GameObject:
   - component: {fileID: 2356514755011536676}
   - component: {fileID: 944125969246625189}
   - component: {fileID: 2068131834830056071}
+  - component: {fileID: 688365604195385431}
   m_Layer: 8
   m_Name: Sprites
   m_TagString: Untagged
@@ -191,7 +187,7 @@ Transform:
   m_GameObject: {fileID: 4953729408761684111}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.25, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -238,8 +234,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1583206393
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 293001272, guid: e8b168909b5ff2941a77a05f16da5932, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -251,7 +247,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &2068131834830056071
 Animator:
   serializedVersion: 7
@@ -274,3 +270,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &688365604195385431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953729408761684111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff6ae02ba5a9c44ba6136a604950dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

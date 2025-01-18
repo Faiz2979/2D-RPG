@@ -15,8 +15,12 @@ public class AnimatorEvents : MonoBehaviour
         
     }
 
-    private void AnimationTrigger()
+    private void AttackOverTrigger()
     {
         playerController.AttackOver();
+    }
+    private void AttackStartTrigger()
+    {
+        playerController.AttackStart();
     }
 }

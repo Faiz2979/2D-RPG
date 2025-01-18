@@ -25,17 +25,20 @@ public class PlayerController : MonoBehaviour
 
     [Header("Combat Mechanics")]
     public bool isAttacking;
+    public bool doAttack;
     private int comboCounter = 1;
     private float attackTimer;
     [SerializeField]private float attackCD = 0.5f;
     [SerializeField]private float comboCD = 0.5f;
-    private float comboTimer;
+    public float comboTimer;
 
-    private bool player_Jump;
-    private bool player_Dash;
-    private bool player_Down;
-    private bool player_Attack;
+
+    private bool player_Jump,player_Dash,player_Down,player_Attack;
     private bool isDashing;
+
+    public int facingDir=1;
+    public bool isRight = true;
+
     private void Awake()
     {
         playerControls = new PlayerControls();
@@ -64,19 +67,7 @@ public class PlayerController : MonoBehaviour
         player_Attack = playerControls.Combat.BasicAttack.triggered;
 
         if (player_Attack && attackTimer < 0){
-            
-            if (comboTimer <= 0) {
-                // Trigger animasi serangan berikutnya dalam combo
-                animator.SetTrigger("isAttacking");
-            } else {
-                // Combo telah selesai, reset ke serangan awal
-                comboCounter = 1; 
-                animator.SetTrigger("isAttacking");
-            }
-
-            comboTimer = comboCD;
-            attackTimer = attackCD;
-
+            AttackEvent();
         }
 
         player_Jump = playerControls.Movement.Jump.triggered;
@@ -88,9 +79,15 @@ void Move()
     CheckGroundStatus();
     rb.linearVelocity = new Vector2(sideMoveInput * moveSpeed, rb.linearVelocity.y);
 
-    if (player_Jump && isGrounded)
+    if(doAttack){
+        rb.linearVelocity = new Vector2(0, 0);
+    }
+    else if (player_Jump && isGrounded)
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+    }
+    else{
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y);
     }
     if (player_Down)
     {
@@ -125,22 +122,28 @@ void Move()
 
     void FlipSprite()
     {
-        if (sideMoveInput > 0)
+        if (sideMoveInput > 0 && !isRight)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            Flip();
         }
-        else if (sideMoveInput < 0)
+        else if (sideMoveInput < 0 && isRight)
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            Flip();
         }
-        }
+    }
+
     
+    void Flip(){
+        transform.Rotate(0.0f, 180.0f, 0.0f);
+        isRight = !isRight;
+        facingDir *= -1;
+    }
     
     
 void Dash(){
     if (isDashing  && dashTimer > 0){
         dashTimer -= Time.deltaTime;
-        rb.linearVelocity = new Vector2(sideMoveInput * dashSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(facingDir * dashSpeed, rb.linearVelocity.y);
         if (dashTimer <= 0){
             isDashing = false;
             dashTimer = dashCD;
@@ -159,11 +162,28 @@ void Dash(){
 
 
 public void AttackOver(){
+    doAttack = false;
     comboCounter++;
     if (comboCounter > 3){
         comboCounter = 1;
     }
+}
+public void AttackStart(){
+    doAttack = true;
+}
 
+public void AttackEvent(){
+    if (comboTimer >= 0) {
+                // Trigger animasi serangan berikutnya dalam combo
+                animator.SetTrigger("isAttacking");
+            } else {
+                // Combo telah selesai, reset ke serangan awal
+                comboCounter = 1; 
+                animator.SetTrigger("isAttacking");
+            }
+
+            comboTimer = comboCD;
+            attackTimer = attackCD;
 }
 
     private void OnDisable()
